@@ -5,6 +5,7 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 require '../vendor/autoload.php';
+require '../classes/HeroesMapper.php';
 
 $config['displayErrorDetails'] = true;
 $config['addContentLengthHeader'] = false;
@@ -68,7 +69,8 @@ $app->get('/heros',function(Request $request, Response $response){
     $mapper = new HeroesMapper($this->db);
     $heroes = $mapper->getHeroes();
 
-    $response->getBody()->write(var_export($heroes, true));
+    //$response->getBody()->write(var_export($heroes, true));
+    $response->getBody()->write(json_encode($heroes));
     return $response;
 });
 

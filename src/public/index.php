@@ -75,25 +75,26 @@ $app->get('/heros',function(Request $request, Response $response){
 });
 
 $app->get('/hero/{id}',function(Request $request, Response $response, $args){
-    $this->logger->addInfo("Getting hero details {$id}");
+   // $this->logger->addInfo("Getting hero details {$id}");
 
     $ftid = (int)$args['id'];
 
     $mapper = new HeroesMapper($this->db);
-    $hero   =  $mapper->getHeroDetails($id);
+    //$hero   =  $mapper->getHeroDetails($id);
 
-    $response->getBody()->write(var_export($hero,true));
+    //$response->getBody()->write(var_export($hero,true));
     return $response;
 });
 
 
 $app->post('/hero/new',function(Request $request, Response $response){
-    $data = $request->getParseBody();
-    $fm_data = [];
-    $fm_data['name'] = filter_var($data['title'], FILTER_SANITIZE_STRING);
-    $fm_data['father'] = filter_var($data['description'], FILTER_SANITIZE_STRING);
+    $data = $request->getParsedBody();
+    //$data = json_decode($data);
+    /*$fm_data = [];
+    $fm_data['id'] = filter_var($request->params('member_id'), FILTER_SANITIZE_STRING);
+    $fm_data['name'] = filter_var($request->params('member_name'), FILTER_SANITIZE_STRING);*/
 
-    $response->getBody()->write(var_export($fm_data));
+    $response->getBody()->write(json_encode($data));
     return $response;
 });
 

@@ -72,7 +72,7 @@ $app->get('/heroes', function (Request $request, Response $response, array $args
 });
 
 
-$app->get('/heros',function(Request $request, Response $response){
+$app->get('/members',function(Request $request, Response $response){
     $this->logger->addInfo("heroes list");
 
     $mapper = new MembersMapper($this->db);
@@ -110,15 +110,24 @@ $app->get('/femalemembers',function(Request $request, Response $response){
 });
 
 
-$app->get('/hero/{id}',function(Request $request, Response $response, $args){
+$app->get('/member/{id}',function(Request $request, Response $response, $args){
    // $this->logger->addInfo("Getting hero details {$id}");
 
     $ftid = (int)$args['id'];
 
     $mapper = new MembersMapper($this->db);
-    //$hero   =  $mapper->getHeroDetails($id);
+    $member   =  $mapper->getMemberDetails($ftid);
 
-    //$response->getBody()->write(var_export($hero,true));
+    $member[0]['member_father'] = $mapper->getMemberParent($member[0]['member_father']);
+    $member[0]['member_mother'] = $mapper->getMemberParent($member[0]['member_mother']);
+    $member[0]['member_wives']=$mapper->getMultiAssoc($member[0]['member_wives']);
+
+    $member[0]['member_sons']=$mapper->getMemberChildren($ftid,$member[0]['member_gender'],'sons');
+    $member[0]['member_daughters']=$mapper->getMemberChildren($ftid,$member[0]['member_gender'],'daughters');
+
+    $response->getBody()->write(json_encode($member,true));
+
+
     return $response;
 });
 
@@ -139,13 +148,21 @@ $app->post('/hero/new',function(Request $request, Response $response){
     $member_data['gender'] = filter_var($request->getParsedBody()['gender'], FILTER_SANITIZE_STRING);
     $member_data['father'] = filter_var($request->getParsedBody()['father'], FILTER_SANITIZE_STRING);
     $member_data['mother'] = filter_var($request->getParsedBody()['mother'], FILTER_SANITIZE_STRING);
+    $member_data['wives'] = filter_var($request->getParsedBody()['wives'], FILTER_SANITIZE_STRING);
+    
+    $member_data['dob'] = $request->getParsedBody()['dob'];
+    $member_data['dod'] = $request->getParsedBody()['dod'];
     //echo json_encode($data);
 
     $mapper = new MembersMapper($this->db);
     $insertId = $mapper->insertMember($member_data);
 
+    //Fetch the recently added member details to attach in respective lists in FrontEnd
+    $insert = $mapper->getMemberDetails($insertId);
+
     $res['status']='success';
-    $res['insertId']=$insertId;
+    $res['insert']=$insert;
+    //$res['data'] = $member_data;
 
     $response->getBody()->write(json_encode($res));
     return $response;

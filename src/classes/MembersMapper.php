@@ -17,14 +17,21 @@ class MembersMapper{
         return $sth->fetchAll();
     }
 
+    public function getHusband($id){
+        $sth = $this->db->prepare("SELECT ft_id as member_id, family_id, name as member_name, dob as member_dob, dod as member_dod, gender as member_gender, wives as member_wives, mother as member_mother, father as member_father FROM members where find_in_set('$id',wives)");
+        $sth->execute();
+        $husband[] = $sth->fetchAll();
+        return $husband;
+    }
+
     public function getMaleMembers(){
-        $sth = $this->db->prepare("SELECT * FROM members where gender='M' ORDER BY ft_id ");
+        $sth = $this->db->prepare("SELECT ft_id as member_id, family_id, name as member_name, dob as member_dob, dod as member_dod, gender as member_gender, wives as member_wives, mother as member_mother, father as member_father FROM members where gender='M' ORDER BY ft_id ");
         $sth->execute();
         return $sth->fetchAll();
     }
 
     public function getFemaleMembers(){
-        $sth = $this->db->prepare("SELECT * FROM members where gender='F' ORDER BY ft_id ");
+        $sth = $this->db->prepare("SELECT ft_id as member_id, family_id, name as member_name, dob as member_dob, dod as member_dod, gender as member_gender, wives as member_wives, mother as member_mother, father as member_father FROM members where gender='F' ORDER BY ft_id ");
         $sth->execute();
         return $sth->fetchAll();
     }
@@ -38,7 +45,7 @@ class MembersMapper{
     }
 
     public function getMultiAssoc($strAssocMembers){
-        if($strAssocMembers!='undefined' || !empty($strAssocMembers)){
+        if($strAssocMembers!='undefined' && !empty($strAssocMembers)){
             $arrAssMembers  =   explode(',',$strAssocMembers);    
             $wives = array();
             foreach ($arrAssMembers as $key => $value) {
@@ -74,7 +81,8 @@ class MembersMapper{
         $arrChildren = array();
 
         foreach ($children as $key => $value) {
-            $arrChildren[] = $this->getMemberDetails($value['ft_id']);
+            $memberDetails = $this->getMemberDetails($value['ft_id']);
+            $arrChildren[] = $memberDetails[0];
         }
         return $arrChildren;
     }

@@ -1,19 +1,33 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 
+define('APP_ENV',getenv('APP_ENV'));
+
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 require '../vendor/autoload.php';
 require '../classes/MembersMapper.php';
 
-$config['displayErrorDetails'] = true;
+
 $config['addContentLengthHeader'] = false;
 
-$config['db']['host']   = 'localhost';
-$config['db']['user']   = 'root';
-$config['db']['pass']   = '';
-$config['db']['dbname'] = 'ftapi';
+if(APP_ENV=='dev'){
+    $config['displayErrorDetails'] = true;
+
+    $config['db']['host']   = 'localhost';
+    $config['db']['user']   = 'root';
+    $config['db']['pass']   = '';
+    $config['db']['dbname'] = 'ftapi';    
+} else if(APP_ENV=='prod'){
+    $config['displayErrorDetails'] = false;
+
+    $config['db']['host']   = 'localhost';
+    $config['db']['user']   = 'brahmana_ftapi';
+    $config['db']['pass']   = 'pGNpwFbUUYLq';
+    $config['db']['dbname'] = 'brahmana_ftapi';
+}
+
 
 $app = new \Slim\App(['settings' => $config]);
 $container = $app->getContainer();
@@ -120,7 +134,13 @@ $app->get('/member/{id}',function(Request $request, Response $response, $args){
 
     $member[0]['member_father'] = $mapper->getMemberParent($member[0]['member_father']);
     $member[0]['member_mother'] = $mapper->getMemberParent($member[0]['member_mother']);
-    $member[0]['member_wives']=$mapper->getMultiAssoc($member[0]['member_wives']);
+    
+    if($member[0]['member_gender']=='F'){
+        $member[0]['member_wives']=$mapper->getHusband($ftid);    
+    }else {
+        $member[0]['member_wives']=$mapper->getMultiAssoc($member[0]['member_wives']);    
+    }
+    
 
     $member[0]['member_sons']=$mapper->getMemberChildren($ftid,$member[0]['member_gender'],'sons');
     $member[0]['member_daughters']=$mapper->getMemberChildren($ftid,$member[0]['member_gender'],'daughters');

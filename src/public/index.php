@@ -136,7 +136,8 @@ $app->get('/member/{id}',function(Request $request, Response $response, $args){
     $member[0]['member_mother'] = $mapper->getMemberParent($member[0]['member_mother']);
     
     if($member[0]['member_gender']=='F'){
-        $member[0]['member_wives']=$mapper->getHusband($ftid);    
+        $husband = $mapper->getHusband($ftid);
+        $member[0]['member_wives']=$husband[0];    
     }else {
         $member[0]['member_wives']=$mapper->getMultiAssoc($member[0]['member_wives']);    
     }

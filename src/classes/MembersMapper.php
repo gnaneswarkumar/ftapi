@@ -49,7 +49,8 @@ class MembersMapper{
             $arrAssMembers  =   explode(',',$strAssocMembers);    
             $wives = array();
             foreach ($arrAssMembers as $key => $value) {
-                $wives[]    =   $this->getMemberDetails($value);
+                $wife       = $this->getMemberDetails($value);
+                $wives[]    =   $wife[0];
             }
             return $wives;
         } else {

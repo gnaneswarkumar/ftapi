@@ -175,6 +175,20 @@ $app->post('/hero/new',function(Request $request, Response $response){
     $member_data['dod'] = $request->getParsedBody()['dod'];
     //echo json_encode($data);
 
+    $member_data['profile_picture'] = ''; //Declare empty for no profile pic uploaded.
+    if(!empty($_FILES)){
+        //$response->getBody()->write(json_encode($_FILES));
+        //return $response;
+
+        $file_name = uniqid('img-'.date('Ymd')).'__'.$_FILES['image']['name'];
+        $path = 'images/profile/';
+
+        if(move_uploaded_file($_FILES['image']['tmp_name'], $path.$file_name)){
+            $member_data['profile_picture'] = $file_name;
+        }
+
+    }
+
     $mapper = new MembersMapper($this->db);
     $insertId = $mapper->insertMember($member_data);
 

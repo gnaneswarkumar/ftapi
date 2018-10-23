@@ -12,26 +12,26 @@ class MembersMapper{
     }
 
     public function getMemberDetails($id){
-        $sth = $this->db->prepare("SELECT ft_id as member_id, family_id, name as member_name, dob as member_dob, dod as member_dod, gender as member_gender, wives as member_wives, mother as member_mother, father as member_father FROM members where ft_id='$id'");
+        $sth = $this->db->prepare("SELECT ft_id as member_id, family_id, name as member_name, dob as member_dob, dod as member_dod, gender as member_gender, wives as member_wives, mother as member_mother, father as member_father, profile_picture FROM members where ft_id='$id'");
         $sth->execute();
         return $sth->fetchAll();
     }
 
     public function getHusband($id){
-        $sth = $this->db->prepare("SELECT ft_id as member_id, family_id, name as member_name, dob as member_dob, dod as member_dod, gender as member_gender, wives as member_wives, mother as member_mother, father as member_father FROM members where find_in_set('$id',wives)");
+        $sth = $this->db->prepare("SELECT ft_id as member_id, family_id, name as member_name, dob as member_dob, dod as member_dod, gender as member_gender, wives as member_wives, mother as member_mother, father as member_father, profile_picture FROM members where find_in_set('$id',wives)");
         $sth->execute();
         $husband[] = $sth->fetchAll();
         return $husband;
     }
 
     public function getMaleMembers(){
-        $sth = $this->db->prepare("SELECT ft_id as member_id, family_id, name as member_name, dob as member_dob, dod as member_dod, gender as member_gender, wives as member_wives, mother as member_mother, father as member_father FROM members where gender='M' ORDER BY ft_id ");
+        $sth = $this->db->prepare("SELECT ft_id as member_id, family_id, name as member_name, dob as member_dob, dod as member_dod, gender as member_gender, wives as member_wives, mother as member_mother, father as member_father, profile_picture FROM members where gender='M' ORDER BY ft_id ");
         $sth->execute();
         return $sth->fetchAll();
     }
 
     public function getFemaleMembers(){
-        $sth = $this->db->prepare("SELECT ft_id as member_id, family_id, name as member_name, dob as member_dob, dod as member_dod, gender as member_gender, wives as member_wives, mother as member_mother, father as member_father FROM members where gender='F' ORDER BY ft_id ");
+        $sth = $this->db->prepare("SELECT ft_id as member_id, family_id, name as member_name, dob as member_dob, dod as member_dod, gender as member_gender, wives as member_wives, mother as member_mother, father as member_father, profile_picture FROM members where gender='F' ORDER BY ft_id ");
         $sth->execute();
         return $sth->fetchAll();
     }
@@ -93,8 +93,8 @@ class MembersMapper{
         /**
             https://arjunphp.com/creating-restful-api-slim-framework/
          */
-        $namesString = 'name, gender,father,mother,wives';
-        $nameBindingString = ':name,:gender,:father,:mother,:wives';
+        $namesString = 'name, gender,father,mother,wives,profile_picture';
+        $nameBindingString = ':name,:gender,:father,:mother,:wives,:profile_picture';
 
         //add Dob and Dod only when they are available.   
         if(!empty($values['dob']) or $values['dob']!='Invalid Date'){
@@ -116,6 +116,7 @@ class MembersMapper{
         $sth->bindParam("father", $values['father']);
         $sth->bindParam("mother", $values['mother']);
         $sth->bindParam("wives", $values['wives']);
+        $sth->bindParam("profile_picture", $values['profile_picture']);
         
         //add Dob and Dod only when they are available.   
         if(!empty($values['dob']) or $values['dob']!='Invalid Date'){

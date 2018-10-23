@@ -1,0 +1,1 @@
+ALTER TABLE `members` ADD `profile_picture` VARCHAR(256) NULL AFTER `father`;
